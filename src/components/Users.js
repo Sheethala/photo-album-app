@@ -1,23 +1,15 @@
-import React, { Component } from 'react';
 import Avatar from 'material-ui/Avatar';
+import axios from 'axios';
+import React, { Component } from 'react';
 import List from 'material-ui/List/List';
 import ListItem from 'material-ui/List/ListItem';
-import {Link, Route} from 'react-router-dom';
-import Albums from './Albums'
-import FontIcon from 'material-ui/FontIcon';
-import axios from 'axios';
+import { Link } from 'react-router-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Main from './Main'
-import user from '../assets/user.svg'
-import {
-  blue300,
-  indigo900,
-  orange200,
-  deepOrange300,
-  pink400,
-  purple500,
-} from 'material-ui/styles/colors';
 
+import Albums from './Albums'
+import Header from './Header'
+import user from '../assets/user.svg'
+import Loading from './Loading'
 class Users extends Component {
 	//Gets all the Users using http Request, and rennders them in a list
 	constructor(props) {
@@ -30,12 +22,10 @@ class Users extends Component {
 	setUsersState(users) {
 		this.setState({users: users})
 	}
+	
 	componentDidMount() {
 		axios.get('https://jsonplaceholder.typicode.com/users')
 			.then(res => {
-				console.log("THE RES I<S")
-				//Res data has the names
-				console.log(res)
 				this.setUsersState(res.data)
 			})
 	}
@@ -47,18 +37,22 @@ class Users extends Component {
 					disabled={true}
 					leftAvatar={<Avatar>{user.name[0].toUpperCase()}</Avatar>}
 				>
-				<Link exact="true" to={`/users/${user.id}/albums`}>
-			 {user.name}
-			 </Link>
-			</ListItem>
-		))
+					<Link exact="true" to={`/users/${user.id}/albums`}>
+			 			{user.name}
+			 		</Link>
+				</ListItem>
+			))
 	}
 	
   render() {
+		if(this.state.users.length === 0) {
+			return (
+				<Loading />
+			)
+		}
     return (
-			
 			<MuiThemeProvider>
-			<Main src={user}/>
+			<Header src={user} title='Users'/>
 
 			<List>
      		{this.getUserList()}
